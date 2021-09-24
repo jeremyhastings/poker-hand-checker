@@ -1,0 +1,34 @@
+---
+detectors:
+  IrresponsibleModule:
+    enabled: false
+  LongParameterList:
+    max_params: 5
+  NestedIterators:
+    max_allowed_nesting: 2
+  TooManyStatements:
+    max_statements: 10
+  TooManyInstanceVariables:
+    max_instance_variables: 5
+  UncommunicativeModuleName:
+    enabled: false
+  UncommunicativeVariableName:
+    accept:
+      - '/^e$/'
+directories:
+  app/controllers:
+    InstanceVariableAssumption:
+      enabled: false
+  app/facades:
+    InstanceVariableAssumption:
+      enabled: false
+  app/helpers:
+    UtilityFunction:
+      enabled: false
+  lib/billing/chargify/api/params:
+    UtilityFunction:
+      enabled: false
+exclude_paths:
+  - db
+  - node_modules
+  - tmp

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Base Template</title>
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag(controller.controller_name, media: 'all', 'data-turbolinks-track': 'reload') %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+    <%= yield(:head) %>
+  </head>
+
+  <body class="<%= controller.controller_name %>-<%= controller.action_name %>">
+  <%#= render('shared/flash') %>
+
+  <div class="container">
+    <%= yield %>
+  </div>
+
+  <%= yield(:body_js) %>
+  </body>
+</html>

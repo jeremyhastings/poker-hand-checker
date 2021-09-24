@@ -1,0 +1,35 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.1.2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:3.0.0-node-browsers
+    steps:
+      - checkout
+      - ruby/install-deps
+  test:
+    parallelism: 1
+    docker:
+      - image: circleci/ruby:3.0.0-node-browsers
+    environment:
+      BUNDLE_JOBS: '3'
+      BUNDLE_RETRY: '3'
+      RAILS_ENV: test
+      COVERAGE: '1'
+    steps:
+      - checkout
+      - ruby/install-deps
+      - run:
+          name: Compile Assets
+          command: COVERGE=0 bundle exec rails assets:precompile
+      - ruby/rspec-test
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build

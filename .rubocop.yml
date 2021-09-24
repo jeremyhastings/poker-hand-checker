@@ -1,0 +1,42 @@
+inherit_from: .rubocop_todo.yml
+require:
+  - rubocop-performance
+  - rubocop-rspec
+  - rubocop-rails
+
+AllCops:
+  Exclude:
+    - bin/**/*
+    - config/spring.rb
+    - db/**/*
+    - node_modules/**/*
+    - tmp/**/*
+  AllowSymlinksInCacheRootDirectory: true
+  NewCops: enable
+Metrics/MethodLength:
+  Max: 10
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+Rails/DynamicFindBy:
+  Whitelist:
+    - find_by_id
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+RSpec/EmptyExampleGroup:
+  Enabled: false
+RSpec/NestedGroups:
+  Max: 4
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+Rails/SkipsModelValidations:
+  AllowedMethods:
+    - toggle!
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - production
+    - staging
