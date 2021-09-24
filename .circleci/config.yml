@@ -5,14 +5,14 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/ruby:3.0.0-node-browsers
+      - image: circleci/ruby:3.0.2-node-browsers
     steps:
       - checkout
       - ruby/install-deps
   test:
     parallelism: 1
     docker:
-      - image: circleci/ruby:3.0.0-node-browsers
+      - image: circleci/ruby:3.0.2-node-browsers
     environment:
       BUNDLE_JOBS: '3'
       BUNDLE_RETRY: '3'
