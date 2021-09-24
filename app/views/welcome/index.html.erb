@@ -2,7 +2,7 @@
 
 <%= form_for(:poker_hand, url: '/welcome/index', remote: true) do |form| %>
   <%= form.text_field :cards %>
-  <%= form.submit %>
+  <%= form.submit 'Submit Poker Hand' %>
 <% end %>
 
 <div id="poker-hand-response">
