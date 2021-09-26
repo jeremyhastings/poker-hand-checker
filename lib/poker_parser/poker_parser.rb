@@ -2,28 +2,44 @@ module PokerParser
   Card = Struct.new(:suit, :rank) do
     include Comparable
 
-    def precedence()      = [SUITS_SCORES[suit], RANKS_SCORES[rank]]
+    def precedence
+      [SUITS_SCORES[suit], RANKS_SCORES[rank]]
+    end
 
-    def rank_precedence() = RANKS_SCORES[rank]
+    def rank_precedence
+      RANKS_SCORES[rank]
+    end
 
-    def suit_precedence() = SUITS_SCORES[rank]
+    def suit_precedence
+      SUITS_SCORES[rank]
+    end
 
-    def <=>(other) = precedence <=> other.precedence
+    def <=>(other)
+      precedence <=> other.precedence
+    end
 
-    def to_s() = "#{suit}#{rank}"
+    def to_s
+      "#{suit}#{rank}"
+    end
   end
 
   Hand = Struct.new(:cards) do
-    def sort()         = Hand[cards.sort]
+    def sort
+      Hand[cards.sort]
+    end
 
-    def sort_by_rank() = Hand[cards.sort_by(&:rank_precedence)]
+    def sort_by_rank
+      Hand[cards.sort_by(&:rank_precedence)]
+    end
 
-    def to_s() = cards.map(&:to_s).join(', ')
+    def to_s
+      cards.map(&:to_s).join(', ')
+    end
   end
 
-  SUITS        = %w(S H D C).freeze
+  SUITS = %w[S H D C].freeze
   SUITS_SCORES = SUITS.each_with_index.to_h
-  RANKS        = [*2..10, 'J', 'Q', 'K', 'A'].map(&:to_s).freeze
+  RANKS = %w[2 3 4 5 6 7 8 9 10 J Q K A].freeze
   RANKS_SCORES = RANKS.each_with_index.to_h
 
   SCORES = {
@@ -39,123 +55,60 @@ module PokerParser
     high_card: 'High Card'
   }.freeze
 
-  CARDS = SUITS.flat_map do |suit|
-    RANKS.map { |rank| Card[suit, rank] }
-  end.freeze
-
-  def add_rank(rank, n) = RANKS[RANKS_SCORES[rank] + n]
-
-  def royal_flush?(hand)
-    hand in [
-      Card[suit, '10'],
-      Card[^suit, 'J'],
-      Card[^suit, 'Q'],
-      Card[^suit, 'K'],
-      Card[^suit, 'A']
-    ]
-  end
-
-  def straight_flush?(hand) = straight?(hand) && flush?(hand)
-
-  def straight?(hand)
-    hand in [
-      Card[*, rank],
-      Card[*, add_rank(rank, 1).to_s],
-      Card[*, add_rank(rank, 2).to_s],
-      Card[*, add_rank(rank, 3).to_s],
-      Card[*, add_rank(rank, 4).to_s],
-    ]
-  end
-
-  def flush?(hand)
-    hand in [
-      Card[suit, *],
-      Card[^suit, *],
-      Card[^suit, *],
-      Card[^suit, *],
-      Card[^suit, *]
-    ]
-  end
-
-  def four_of_a_kind?(hand)
-    hand in [
-      *,
-      Card[*, rank],
-      Card[*, ^rank],
-      Card[*, ^rank],
-      Card[*, ^rank],
-      *
-    ]
-  end
-
-  def full_house?(hand)
-    return true if hand in [
-      Card[*, rank_one],
-      Card[*, ^rank_one],
-      Card[*, rank_two],
-      Card[*, ^rank_two],
-      Card[*, ^rank_two]
-    ]
-
-    hand in [
-      Card[*, rank_one],
-      Card[*, ^rank_one],
-      Card[*, ^rank_one],
-      Card[*, rank_two],
-      Card[*, ^rank_two]
-    ]
-  end
-
-  def three_of_a_kind?(hand)
-    hand in [
-      *,
-      Card[*, rank],
-      Card[*, ^rank],
-      Card[*, ^rank],
-      *
-    ]
-  end
-
-  def two_pair?(hand)
-    return true if hand in [
-      Card[*, rank_one],
-      Card[*, ^rank_one],
-      *,
-      Card[*, rank_two],
-      Card[*, ^rank_two]
-    ]
-
-    hand in [
-      *,
-      Card[*, rank_one],
-      Card[*, ^rank_one],
-      Card[*, rank_two],
-      Card[*, ^rank_two],
-      *
-    ]
-  end
-
-  def one_pair?(hand)
-    hand in [
-      *,
-      Card[*, rank],
-      Card[*, ^rank],
-      *
-    ]
-  end
+  CARDS = SUITS.flat_map { |s| RANKS.map { |r| Card[s, r] } }.freeze
 
   def hand_score(unsorted_hand)
     hand = Hand[unsorted_hand].sort_by_rank.cards
 
-    return SCORES[:royal_flush]     if royal_flush?(hand)
-    return SCORES[:straight_flush]  if straight_flush?(hand)
-    return SCORES[:four_of_a_kind]  if four_of_a_kind?(hand)
-    return SCORES[:full_house]      if full_house?(hand)
-    return SCORES[:flush]           if flush?(hand)
-    return SCORES[:straight]        if straight?(hand)
-    return SCORES[:three_of_a_kind] if three_of_a_kind?(hand)
-    return SCORES[:two_pair]        if two_pair?(hand)
-    return SCORES[:one_pair]        if one_pair?(hand)
+    is_straight = lambda { |hand|
+      hand
+        .map { RANKS_SCORES[_1.rank] }
+        .sort
+        .each_cons(2)
+        .all? { |a, b| b - a == 1 }
+    }
+
+    return SCORES[:royal_flush] if hand in [
+      Card[s, '10'], Card[^s, 'J'], Card[^s, 'Q'], Card[^s, 'K'], Card[^s, 'A']
+    ]
+
+    return SCORES[:straight_flush] if is_straight[hand] && hand in [
+      Card[s, *], Card[^s, *], Card[^s, *], Card[^s, *], Card[^s, *]
+    ]
+
+    return SCORES[:four_of_a_kind] if hand in [
+      *, Card[*, r], Card[*, ^r], Card[*, ^r], Card[*, ^r], *
+    ]
+
+    return SCORES[:full_house] if hand in [
+      Card[*, r1], Card[*, ^r1], Card[*, ^r1], Card[*, r2], Card[*, ^r2]
+    ]
+
+    return SCORES[:full_house] if hand in [
+      Card[*, r1], Card[*, ^r1], Card[*, r2], Card[*, ^r2], Card[*, ^r2]
+    ]
+
+    return SCORES[:flush] if hand in [
+      Card[s, *], Card[^s, *], Card[^s, *], Card[^s, *], Card[^s, *]
+    ]
+
+    return SCORES[:straight] if is_straight[hand]
+
+    return SCORES[:three_of_a_kind] if hand in [
+      *, Card[*, r], Card[*, ^r], Card[*, ^r], *
+    ]
+
+    return SCORES[:two_pair] if hand in [
+      *, Card[*, r1], Card[*, ^r1], Card[*, r2], Card[*, ^r2], *
+    ]
+
+    return SCORES[:two_pair] if hand in [
+      Card[*, r1], Card[*, ^r1], *, Card[*, r2], Card[*, ^r2]
+    ]
+
+    return SCORES[:one_pair] if hand in [
+      *, Card[*, r], Card[*, ^r], *
+    ]
 
     SCORES[:high_card]
   end
