@@ -2,28 +2,12 @@ module PokerParser
   Card = Struct.new(:suit, :rank) do
     include Comparable
 
-    def precedence
-      [SUITS_SCORES[suit], RANKS_SCORES[rank]]
-    end
-
     def rank_precedence
       RANKS_SCORES[rank]
-    end
-
-    def suit_precedence
-      SUITS_SCORES[rank]
-    end
-
-    def <=>(other)
-      precedence <=> other.precedence
     end
   end
 
   Hand = Struct.new(:cards) do
-    def sort
-      Hand[cards.sort]
-    end
-
     def sort_by_rank
       Hand[cards.sort_by(&:rank_precedence)]
     end
