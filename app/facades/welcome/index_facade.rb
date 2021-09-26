@@ -34,6 +34,6 @@ module Welcome
     #
     # def validates_suit
     #   'AH'.last
-    end
+    # end
   end
 end
