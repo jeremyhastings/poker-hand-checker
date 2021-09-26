@@ -5,11 +5,11 @@ module Welcome
     include PokerParser
 
     def process_hand
-      return 'Invalid Hand' unless validates_uniqueness_and_count
+      return 'Invalid hand' unless validates_uniqueness_and_count
 
       separate_face_and_suit
       create_poker_cards
-      poker_hand.any?(&:nil?) ? 'Invalid Hand' : PokerParser::SCORE_MAP[hand_score(poker_hand)]
+      poker_hand.any?(&:nil?) ? 'Invalid hand' : hand_score(poker_hand)
     end
 
     private
