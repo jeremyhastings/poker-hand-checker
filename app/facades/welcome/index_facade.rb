@@ -1,10 +1,14 @@
+require_relative '../../../lib/poker_parser/poker_parser'
+
 module Welcome
   class IndexFacade < ApplicationFacade
+
     def process_hand
       return 'Invalid Hand' unless validates_uniqueness_and_count
 
       separate_face_and_suit
-      processed_data
+      create_poker_cards
+      poker_hand
     end
 
     private
@@ -27,13 +31,26 @@ module Welcome
       @processed_data ||= []
     end
 
-    # def validates_face
-    #   str = '10C'
-    #   str.length == 2 ? str.first : str.first(2)
-    # end
-    #
-    # def validates_suit
-    #   'AH'.last
-    # end
+    def create_poker_cards
+      processed_data.each do |data|
+        poker_hand << (validates_face_and_suit(data) ? data : nil)
+      end
+    end
+
+    def poker_hand
+      @poker_hand ||= []
+    end
+
+    def validates_face_and_suit(card)
+      faces.any?(card.first) && suits.any?(card.last)
+    end
+
+    def faces
+      PokerParser::FACES
+    end
+
+    def suits
+      PokerParser::SUITS
+    end
   end
 end
