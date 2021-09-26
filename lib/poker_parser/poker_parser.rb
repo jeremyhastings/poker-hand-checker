@@ -17,10 +17,6 @@ module PokerParser
     def <=>(other)
       precedence <=> other.precedence
     end
-
-    def to_s
-      "#{suit}#{rank}"
-    end
   end
 
   Hand = Struct.new(:cards) do
@@ -31,10 +27,6 @@ module PokerParser
     def sort_by_rank
       Hand[cards.sort_by(&:rank_precedence)]
     end
-
-    def to_s
-      cards.map(&:to_s).join(', ')
-    end
   end
 
   SUITS = %w[S H D C].freeze
@@ -43,7 +35,6 @@ module PokerParser
   RANKS_SCORES = RANKS.each_with_index.to_h
 
   SCORES = {
-    royal_flush: 'Royal Flush',
     straight_flush: 'Straight Flush',
     four_of_a_kind: 'Four of a Kind',
     full_house: 'Full House',
@@ -57,31 +48,21 @@ module PokerParser
 
   CARDS = SUITS.flat_map { |suit| RANKS.map { |rank| Card[suit, rank] } }.freeze
 
-  def add_rank(rank, n) = RANKS[RANKS_SCORES[rank] + n]
-
-  def royal_flush?(hand)
-    hand in [
-      Card[suit, '10'],
-      Card[^suit, 'J'],
-      Card[^suit, 'Q'],
-      Card[^suit, 'K'],
-      Card[^suit, 'A']
-    ]
+  def add_rank(rank, number)
+    RANKS[RANKS_SCORES[rank] + number]
   end
 
-  def straight_flush?(hand) = (straight?(hand) || ace_low_straight?(hand)) && flush?(hand)
+  def straight_flush?(hand) = straight?(hand) && flush?(hand)
 
   def straight?(hand)
-    hand in [
+    return true if hand in [
       Card[*, rank],
       Card[*, "#{add_rank(rank, 1)}"],
       Card[*, "#{add_rank(rank, 2)}"],
       Card[*, "#{add_rank(rank, 3)}"],
       Card[*, "#{add_rank(rank, 4)}"],
     ]
-  end
 
-  def ace_low_straight?(hand)
     hand in [
       Card[*, '2'],
       Card[*, '3'],
@@ -171,15 +152,14 @@ module PokerParser
   def hand_score(unsorted_hand)
     hand = Hand[unsorted_hand].sort_by_rank.cards
 
-    return SCORES[:royal_flush]     if royal_flush?(hand)
-    return SCORES[:straight_flush]  if straight_flush?(hand)
-    return SCORES[:four_of_a_kind]  if four_of_a_kind?(hand)
-    return SCORES[:full_house]      if full_house?(hand)
-    return SCORES[:flush]           if flush?(hand)
-    return SCORES[:straight]        if straight?(hand) || ace_low_straight?(hand)
+    return SCORES[:straight_flush] if straight_flush?(hand)
+    return SCORES[:four_of_a_kind] if four_of_a_kind?(hand)
+    return SCORES[:full_house] if full_house?(hand)
+    return SCORES[:flush] if flush?(hand)
+    return SCORES[:straight] if straight?(hand)
     return SCORES[:three_of_a_kind] if three_of_a_kind?(hand)
-    return SCORES[:two_pair]        if two_pair?(hand)
-    return SCORES[:one_pair]        if one_pair?(hand)
+    return SCORES[:two_pair] if two_pair?(hand)
+    return SCORES[:one_pair] if one_pair?(hand)
 
     SCORES[:high_card]
   end
