@@ -2,13 +2,14 @@ require_relative '../../../lib/poker_parser/poker_parser'
 
 module Welcome
   class IndexFacade < ApplicationFacade
+    include PokerParser
 
     def process_hand
       return 'Invalid Hand' unless validates_uniqueness_and_count
 
       separate_face_and_suit
       create_poker_cards
-      poker_hand
+      poker_hand.any?(&:nil?) ? 'Invalid Hand' : PokerParser::SCORE_MAP[hand_score(poker_hand)]
     end
 
     private
@@ -33,7 +34,7 @@ module Welcome
 
     def create_poker_cards
       processed_data.each do |data|
-        poker_hand << (validates_face_and_suit(data) ? data : nil)
+        poker_hand << (validates_face_and_suit(data) ? PokerParser::Card.new(data.last, data.first) : nil)
       end
     end
 
@@ -46,7 +47,7 @@ module Welcome
     end
 
     def faces
-      PokerParser::FACES
+      PokerParser::RANKS
     end
 
     def suits
