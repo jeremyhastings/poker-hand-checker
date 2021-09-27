@@ -30,6 +30,7 @@ group :development, :test do
   gem 'rubocop-performance', require: false # https://github.com/rubocop/rubocop-performance
   gem 'rubocop-rails', require: false # https://github.com/rubocop-hq/rubocop-rails (Linter)
   gem 'rubocop-rspec', require: false # https://github.com/rubocop-hq/rubocop-rspec (Linter)
+  gem 'sqlite3'
 end
 
 group :development do
