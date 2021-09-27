@@ -19,7 +19,7 @@ module Welcome
     end
 
     def separate_face_and_suit
-      raw_data.uniq.each do |data|
+      raw_data.each do |data|
         processed_data << (data.length == 2 ? [data.first, data.last] : [data.first(2), data.last])
       end
     end

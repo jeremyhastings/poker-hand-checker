@@ -1,7 +1,5 @@
 module PokerParser
   Card = Struct.new(:suit, :rank) do
-    include Comparable
-
     def rank_precedence
       RANKS_SCORES[rank]
     end
@@ -44,7 +42,7 @@ module PokerParser
       Card[*, "#{add_rank(rank, 1)}"],
       Card[*, "#{add_rank(rank, 2)}"],
       Card[*, "#{add_rank(rank, 3)}"],
-      Card[*, "#{add_rank(rank, 4)}"],
+      Card[*, "#{add_rank(rank, 4)}"]
     ]
 
     hand in [
