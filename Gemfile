@@ -25,7 +25,7 @@ group :development, :test do
   gem 'factory_bot_rails' # https://github.com/thoughtbot/factory_bot_rails
   gem 'faker' # https://github.com/faker-ruby/faker
   gem 'reek', require: false # https://github.com/troessner/reek (Linter)
-  gem 'rspec-rails', '~> 5.0.0' # https://github.com/rspec/rspec-rails (Rspec Tests)
+  gem 'rspec-rails', '~> 5.1.0' # https://github.com/rspec/rspec-rails (Rspec Tests)
   gem 'rubocop', '~> 1.0', require: false # https://github.com/rubocop-hq/rubocop (Linter)
   gem 'rubocop-performance', require: false # https://github.com/rubocop/rubocop-performance
   gem 'rubocop-rails', require: false # https://github.com/rubocop-hq/rubocop-rails (Linter)
